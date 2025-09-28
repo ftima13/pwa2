@@ -1,6 +1,7 @@
+// Obtener parámetros de URL
 const params = new URLSearchParams(window.location.search);
 const n = parseInt(params.get('n'));
-const d = parseInt(params.get('d'));
+const d = parseInt(params.get('d')); 
 
 class Quickchart {
     constructor(n, d) {
@@ -8,28 +9,25 @@ class Quickchart {
         this.d = d;
     }
 
+    // Crear datos para Quickchart
     crearCadunos() {
-        let cadunos = "";
-        for (let i = 0; i < this.n; i++) {
-            cadunos += "1,";  // part visible (marcada)
-        }
-        for (let i = 0; i < this.d - this.n; i++) {
-            cadunos += "0.001,";  // part invisible but existing
-        }
-        return cadunos.slice(0, -1);
+        let cad = Array(this.n).fill(1); 
+        cad = cad.concat(Array(this.d - this.n).fill(0)); 
+        return cad.join(',');
     }
 
     generarSrcImg() {
-        const data = this.crearCadunos();
+        // Usamos "chco" para dar color a las porciones: rojo para resaltadas, gris para las demás
+        let colors = Array(this.n).fill("ff0000").concat(Array(this.d - this.n).fill("cccccc")).join('|');
 
-        // Creamos etiquetas: solo la parte marcada (n/d), el resto vacío
-        const labels = ` ${this.n}/${this.d}` + ",".repeat(this.d - 1);
-
-        const url = `https://quickchart.io/chart?cht=p3&chd=t:${data}&chs=500x250&chl=${labels}`;
+        let url = "https://quickchart.io/chart?cht=p&chd=t:" + this.crearCadunos() +
+                  "&chs=500x250&chl=" + this.n + "/" + this.d +
+                  "&chco=" + colors;
         return url;
     }
 }
 
 let q = new Quickchart(n, d);
 document.getElementById("contenido").innerHTML = '<img src="' + q.generarSrcImg() + '" />';
+
 
