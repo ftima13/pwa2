@@ -1,42 +1,41 @@
+// lib.js
+// http://localhost/pwasd25/index.html?n=2&d=5
+const params = new URLSearchParams(window.location.search);
+const n = params.get('n');
+const d = params.get('d');
 
 class Quickchart {
-    constructor(n, d) {
-        this.n = n;
+    constructor(d) {
         this.d = d;
     }
 
+    // Crear una cadena de 1's para dividir el pastel en partes iguales
     crearCadunos() {
         let cadunos = "";
-        // Parte visible (n partes)
-        for (let i = 0; i < this.n; i++) {
-            cadunos += "1,";  // Parte visible
+        // Cambiar el bucle para que vaya de 0 a d
+        for (var i = 0; i < this.d; i++) {
+            cadunos += "1,";  // Cada "1" representa una parte del pastel
         }
-        // Parte invisible (d - n partes)
-        for (let i = 0; i < this.d - this.n; i++) {
-            cadunos += "0.001,";  // Parte invisible pero existente
-        }
-        return cadunos.slice(0, -1);  // Elimina la última coma extra
+        cadunos = cadunos.slice(0, -1);  // Eliminar la última coma extra
+        return cadunos;
     }
 
+    // Generar la URL del gráfico
     generarSrcImg() {
-        const data = this.crearCadunos();
-
-        // Creamos etiquetas: solo la parte marcada (n/d), el resto vacío
-        let labels = `${this.n}/${this.d}` + ",".repeat(this.d - 1);
-        labels = labels.slice(0, -1);  // Elimina la última coma extra
-
-        // Generamos la URL con los datos y etiquetas
-        const url = `https://quickchart.io/chart?cht=p3&chd=t:${data}&chs=500x250&chl=${labels}`;
+        let url = "https://quickchart.io/chart?cht=p3&chd=t:" + this.crearCadunos() 
+                 + "&chs=500x250&chl=" + "1/" + this.d;  // Mostrar "1/d" como etiqueta
         return url;
     }
 }
 
-const params = new URLSearchParams(window.location.search);
-const n = parseInt(params.get('n'));
-const d = parseInt(params.get('d'));
-
-let q = new Quickchart(n, d);
+// Crear el gráfico con el valor de d proporcionado en la URL
+let q = new Quickchart(d);
 document.getElementById("contenido").innerHTML = '<img src="' + q.generarSrcImg() + '" />';
+
+// '<img src="https://quickchart.io/chart?cht=p3&chd=t:1,1,1,1&chs=500x250&chl=1/4">';
+// q.generarSrcImg();
+
+// "<h1>Adios</h1>";
 
 
 
